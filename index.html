@@ -1,29 +1,399 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My First Website</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 90vh;
-      margin: 0;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 { color: #38bdf8; }
-    p { max-width: 400px; line-height: 1.6; }
-  </style>
-</head>
-<body>
-  <h1>Hello, World!</h1>
-  <p>I built and launched this website entirely from my mobile phone.</p>
-</body>
-</html>
+<title>Machine Cabinet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Hanken+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a set of cyanotype drawing sheets. Each sheet is one working machine,
+   framed by a title block like the ones on engineering drawings. */
+:root {
+  --paper: #EDF2F6;
+  --paper-2: #E0E9F0;
+  --ink: #0B2B50;
+  --ink-2: #47617F;
+  --line: #C3D2DE;
+  --accent: #F2A900;
+  --on-accent: #0B2B50;
+  --key: #FFFFFF;
+  --key-dark: #0B2B50;
+  --on-key: #0B2B50;
+  --on-key-dark: #E9F2F8;
+  --display: 'Big Shoulders Display', 'Arial Narrow', Impact, sans-serif;
+  --body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0A2647; --paper-2: #0E3058; --ink: #E9F2F8; --ink-2: #A3BBD1;
+    --line: #245180; --accent: #FFC247; --key: #D9E7F2; --key-dark: #04152B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0A2647; --paper-2: #0E3058; --ink: #E9F2F8; --ink-2: #A3BBD1;
+  --line: #245180; --accent: #FFC247; --key: #D9E7F2; --key-dark: #04152B;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-inline: clamp(16px, 4vw, 40px);
+  padding-block: 20px 56px;
+}
+.wrap { max-width: 1180px; margin-inline: auto; min-width: 0; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.meta, .brand, .readout, label, output, .tb, .index a, .lbl {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.meta { color: var(--ink-2); }
+
+/* top bar */
+.top { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+.brand { font-weight: 500; }
+.brand .dim { color: var(--ink-2); }
+.theme { display: inline-flex; }
+.theme .btn + .btn { margin-left: -1.5px; }
+
+/* buttons */
+.btn {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 9px 14px; min-height: 40px;
+  border: 1.5px solid var(--ink); background: transparent; color: var(--ink);
+  cursor: pointer; border-radius: 0;
+}
+.btn.sm { min-height: 32px; padding: 5px 10px; font-size: 11px; }
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn[aria-pressed="true"], .btn.primary { background: var(--accent); color: var(--on-accent); }
+.btn[aria-pressed="true"]:hover, .btn.primary:hover { background: var(--ink); color: var(--paper); }
+.seg { display: inline-flex; flex-wrap: wrap; }
+.seg .btn + .btn { margin-left: -1.5px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* hero */
+.hero {
+  position: relative; margin-top: 16px; border: 2px solid var(--ink); overflow: hidden;
+  min-height: 440px; display: flex;
+}
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-in {
+  position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column;
+  justify-content: space-between; gap: 28px; padding: clamp(16px, 3vw, 34px);
+}
+h1 {
+  margin: 8px 0 0; font-family: var(--display); font-weight: 900; text-transform: uppercase;
+  font-size: clamp(3.6rem, 14vw, 11rem); line-height: 0.84; letter-spacing: -0.01em;
+  text-wrap: balance; text-shadow: 0 0 28px var(--paper), 0 0 6px var(--paper);
+}
+.hero-bottom { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; align-items: flex-end; }
+.hero-copy { max-width: 30rem; min-width: 0; display: grid; gap: 10px; }
+.lead { font-size: 1.05rem; background: var(--paper); padding: 10px 12px; border: 1px solid var(--line); }
+.hint { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); background: var(--paper); padding: 3px 6px; width: fit-content; }
+.tb {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(100%, 440px);
+  margin: 0; border: 1.5px solid var(--ink); background: var(--paper);
+}
+.tb > div { padding: 7px 10px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); min-width: 0; }
+.tb > div:nth-child(3n) { border-right: 0; }
+.tb > div:nth-child(n+4) { border-bottom: 0; }
+.tb dt { color: var(--ink-2); font-size: 10px; }
+.tb dd { margin: 2px 0 0; font-size: 12px; font-weight: 500; overflow-wrap: anywhere; }
+
+/* sheet index */
+.index { display: flex; flex-wrap: wrap; gap: 0; margin-top: 12px; border: 1.5px solid var(--ink); }
+.index a {
+  flex: 1 1 150px; padding: 10px 12px; color: var(--ink); text-decoration: none;
+  border-right: 1px solid var(--ink); display: flex; gap: 10px; align-items: baseline;
+}
+.index a:last-child { border-right: 0; }
+.index a span { color: var(--ink-2); }
+.index a:hover { background: var(--accent); color: var(--on-accent); }
+.index a:hover span { color: var(--on-accent); }
+
+/* sheets */
+.sheet { margin-top: 76px; border-top: 2px solid var(--ink); padding-top: 14px; min-width: 0; }
+.sheet-head {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+  gap: 10px 36px; align-items: end;
+}
+h2 {
+  margin: 6px 0 0; font-family: var(--display); font-weight: 800; text-transform: uppercase;
+  font-size: clamp(2.8rem, 8vw, 5.6rem); line-height: 0.88; text-wrap: balance;
+}
+.sheet-head > p { color: var(--ink-2); max-width: 34rem; }
+.panel { margin-top: 22px; display: grid; gap: 18px; min-width: 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-end; }
+.ctl { display: grid; gap: 4px; min-width: 0; }
+.ctl label { display: flex; justify-content: space-between; gap: 12px; color: var(--ink-2); }
+.ctl output { color: var(--ink); font-variant-numeric: tabular-nums; }
+.ctl input[type="range"] { width: 170px; max-width: 100%; accent-color: var(--ink); margin: 0; }
+.cv { display: block; width: 100%; height: auto; border: 1.5px solid var(--ink); background: var(--paper); }
+.readout { color: var(--ink); min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 26px; font-family: var(--mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.stats b { font-weight: 500; }
+.stats span { color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
+
+/* keyboard */
+.keys {
+  position: relative; display: flex; height: clamp(150px, 28vw, 230px);
+  border: 1.5px solid var(--ink); user-select: none; -webkit-user-select: none; touch-action: none;
+  background: var(--key);
+}
+.key {
+  border: 0; padding: 0; margin: 0; cursor: pointer; font-family: var(--mono); font-size: 12px;
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 9px;
+  touch-action: none; border-radius: 0;
+}
+.key.w { flex: 1; background: var(--key); color: var(--on-key); border-right: 1px solid var(--line); }
+.key.w:last-child { border-right: 0; }
+.key.b {
+  position: absolute; top: 0; height: 62%; width: 6.8%; z-index: 2;
+  background: var(--key-dark); color: var(--on-key-dark);
+}
+.key.on { background: var(--accent); color: var(--on-accent); }
+
+/* sequencer */
+.seq { display: grid; gap: 3px; }
+.seq-row { display: grid; grid-template-columns: 2.6rem repeat(16, minmax(0, 1fr)); gap: 3px; align-items: stretch; }
+.seq-row .lbl { align-self: center; color: var(--ink-2); font-size: 11px; }
+.cell { height: 30px; min-width: 0; padding: 0; border: 1px solid var(--line); background: var(--paper); cursor: pointer; border-radius: 0; }
+.cell.alt { background: var(--paper-2); }
+.cell[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); }
+.cell.now { box-shadow: inset 0 0 0 2px var(--accent); border-color: var(--accent); }
+.cell.now[aria-pressed="true"] { background: var(--accent); }
+
+/* rule table */
+.rt-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.rt { display: grid; justify-items: center; gap: 5px; padding: 8px 9px; background: transparent; border: 1px solid var(--line); cursor: pointer; border-radius: 0; color: var(--ink); }
+.rt:hover { border-color: var(--ink); }
+.tri { display: flex; gap: 2px; }
+.bx { width: 14px; height: 14px; border: 1.5px solid var(--ink); }
+.bx.on { background: var(--ink); }
+.res { width: 22px; height: 22px; border: 1.5px solid var(--ink); }
+.res.on { background: var(--accent); }
+.note { color: var(--ink-2); max-width: 40rem; }
+input[type="number"] {
+  width: 5.2rem; font-family: var(--mono); font-size: 14px; padding: 7px 8px; min-height: 40px;
+  border: 1.5px solid var(--ink); background: var(--paper); color: var(--ink); border-radius: 0;
+}
+
+/* colophon */
+.colophon {
+  margin-top: 76px; border-top: 2px solid var(--ink); padding-top: 14px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px 36px;
+}
+.colophon p { color: var(--ink-2); font-size: 0.95rem; }
+.colophon .meta { color: var(--ink); margin-bottom: 4px; }
+
+@media (max-width: 720px) {
+  .sheet-head { grid-template-columns: minmax(0, 1fr); }
+  .tb { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tb > div:nth-child(3n) { border-right: 1px solid var(--ink); }
+  .tb > div:nth-child(2n) { border-right: 0; }
+  .tb > div:nth-child(n+4) { border-bottom: 1px solid var(--ink); }
+  .tb > div:nth-child(n+5) { border-bottom: 0; }
+  .index a { border-right: 0; border-bottom: 1px solid var(--ink); flex-basis: 100%; }
+  .index a:last-child { border-bottom: 0; }
+  .seq-row { grid-template-columns: 2.1rem repeat(16, minmax(0, 1fr)); gap: 2px; }
+  .cell { height: 34px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="brand">Machine Cabinet <span class="dim">/ drawing set A</span></span>
+    <div class="theme" role="group" aria-label="Colour theme">
+      <button class="btn sm" data-mode="auto" aria-pressed="true">Auto</button>
+      <button class="btn sm" data-mode="light" aria-pressed="false">Light</button>
+      <button class="btn sm" data-mode="dark" aria-pressed="false">Dark</button>
+    </div>
+  </header>
+
+  <section class="hero" id="hero" aria-labelledby="title">
+    <canvas id="flow" aria-hidden="true"></canvas>
+    <div class="hero-in">
+      <div>
+        <p class="meta">Sheet 01 / 05 · Flow field · <span id="pcount">1,000</span> lines in motion</p>
+        <h1 id="title">Machine<br>Cabinet</h1>
+      </div>
+      <div class="hero-bottom">
+        <div class="hero-copy">
+          <p class="lead">Five small machines drawn as a technical set: a flow field, a synthesiser, a game of life, a harmonograph and a rule table. Every one of them runs on this page.</p>
+          <p class="hint">Move across the field to bend the lines. Click to release more.</p>
+        </div>
+        <dl class="tb">
+          <div><dt>Sheet</dt><dd>01 / 05</dd></div>
+          <div><dt>Scale</dt><dd>1:1</dd></div>
+          <div><dt>Date</dt><dd>2026-10-12</dd></div>
+          <div><dt>Drawn by</dt><dd>Claude</dd></div>
+          <div><dt>Status</dt><dd>Running</dd></div>
+          <div><dt>Rev</dt><dd>A</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <nav class="index" aria-label="Sheet index">
+    <a href="#hero"><span>01</span>Flow field</a>
+    <a href="#synth"><span>02</span>Synthesiser</a>
+    <a href="#life"><span>03</span>Life</a>
+    <a href="#harmonograph"><span>04</span>Harmonograph</a>
+    <a href="#rules"><span>05</span>Rule table</a>
+  </nav>
+
+  <!-- SHEET 02 -->
+  <section class="sheet" id="synth" aria-labelledby="h-synth">
+    <div class="sheet-head">
+      <div>
+        <p class="meta">Sheet 02 / 05 · Web Audio · Range C4 to C5</p>
+        <h2 id="h-synth">Synthesiser</h2>
+      </div>
+      <p>Play the keys on screen, or the home row of your keyboard: A to K for the white keys, W E T Y U for the black ones. Fill in the grid to loop a pattern in C minor pentatonic.</p>
+    </div>
+    <div class="panel">
+      <div class="controls">
+        <button class="btn primary" id="audioBtn" aria-pressed="false">Turn sound on</button>
+        <div class="ctl">
+          <label>Wave</label>
+          <div class="seg" id="waves" role="group" aria-label="Waveform">
+            <button class="btn sm" data-wave="sine" aria-pressed="false">Sine</button>
+            <button class="btn sm" data-wave="triangle" aria-pressed="false">Tri</button>
+            <button class="btn sm" data-wave="sawtooth" aria-pressed="true">Saw</button>
+            <button class="btn sm" data-wave="square" aria-pressed="false">Square</button>
+          </div>
+        </div>
+        <div class="ctl"><label for="cutoff">Cutoff <output id="cutoffOut">2,000 Hz</output></label><input type="range" id="cutoff" min="0" max="100" value="62"></div>
+        <div class="ctl"><label for="reso">Resonance <output id="resoOut">5.0</output></label><input type="range" id="reso" min="0.5" max="18" step="0.5" value="5"></div>
+        <div class="ctl"><label for="echo">Echo <output id="echoOut">25%</output></label><input type="range" id="echo" min="0" max="0.6" step="0.01" value="0.25"></div>
+        <div class="ctl"><label for="vol">Volume <output id="volOut">70%</output></label><input type="range" id="vol" min="0" max="1" step="0.01" value="0.7"></div>
+      </div>
+      <canvas id="scope" class="cv" width="1200" height="220" aria-label="Oscilloscope showing the live waveform" role="img"></canvas>
+      <p class="readout" id="readout" aria-live="polite">Press a key</p>
+      <div class="keys" id="keys" role="group" aria-label="Piano keys"></div>
+      <div class="seq" id="seq" role="group" aria-label="16 step sequencer"></div>
+      <div class="controls">
+        <button class="btn primary" id="seqPlay" aria-pressed="false">Play loop</button>
+        <div class="ctl"><label for="bpm">Tempo <output id="bpmOut">112 bpm</output></label><input type="range" id="bpm" min="70" max="180" value="112"></div>
+        <button class="btn" id="seqRand">Randomise</button>
+        <button class="btn" id="seqClear">Clear</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 03 -->
+  <section class="sheet" id="life" aria-labelledby="h-life">
+    <div class="sheet-head">
+      <div>
+        <p class="meta">Sheet 03 / 05 · Conway rules B3/S23 · 72 by 40 cells</p>
+        <h2 id="h-life">Life</h2>
+      </div>
+      <p>A cell is born with three live neighbours and survives with two or three. Newborn cells show in amber. Draw on the grid with a finger or the mouse to disturb it.</p>
+    </div>
+    <div class="panel">
+      <div class="controls">
+        <button class="btn primary" id="lifePlay" aria-pressed="false">Pause</button>
+        <button class="btn" id="lifeStep">Step</button>
+        <div class="ctl"><label for="lifeSpeed">Speed <output id="lifeSpeedOut">12 gen/s</output></label><input type="range" id="lifeSpeed" min="2" max="30" value="12"></div>
+        <div class="row">
+          <button class="btn" id="lifeGun">Glider gun</button>
+          <button class="btn" id="lifeR">R-pentomino</button>
+          <button class="btn" id="lifeSoup">Random soup</button>
+          <button class="btn" id="lifeClear">Clear</button>
+        </div>
+      </div>
+      <canvas id="lifeCv" class="cv" aria-label="Game of life grid" role="img" style="touch-action:none;cursor:crosshair"></canvas>
+      <div class="stats"><div><span>Generation</span> <b id="gen">0</b></div><div><span>Population</span> <b id="pop">0</b></div></div>
+    </div>
+  </section>
+
+  <!-- SHEET 04 -->
+  <section class="sheet" id="harmonograph" aria-labelledby="h-harm">
+    <div class="sheet-head">
+      <div>
+        <p class="meta">Sheet 04 / 05 · Two pendulums · Ratios from just intonation</p>
+        <h2 id="h-harm">Harmonograph</h2>
+      </div>
+      <p>Two swinging pendulums, one for each axis, with friction slowly shrinking the swing. The shape depends only on the ratio between their frequencies, the same ratios that make musical intervals.</p>
+    </div>
+    <div class="panel">
+      <div class="controls">
+        <div class="ctl">
+          <label>Interval</label>
+          <div class="seg" id="ratios" role="group" aria-label="Frequency ratio"></div>
+        </div>
+        <div class="ctl"><label for="damp">Friction <output id="dampOut">0.018</output></label><input type="range" id="damp" min="0" max="0.05" step="0.001" value="0.018"></div>
+        <div class="ctl"><label for="detune">Detune <output id="detuneOut">0.002</output></label><input type="range" id="detune" min="0" max="0.01" step="0.0005" value="0.002"></div>
+        <button class="btn" id="drift" aria-pressed="true">Drift</button>
+        <button class="btn primary" id="hear">Hear it</button>
+      </div>
+      <canvas id="harm" class="cv" width="1200" height="560" aria-label="Harmonograph curve" role="img"></canvas>
+      <p class="readout" id="harmOut"></p>
+    </div>
+  </section>
+
+  <!-- SHEET 05 -->
+  <section class="sheet" id="rules" aria-labelledby="h-rules">
+    <div class="sheet-head">
+      <div>
+        <p class="meta">Sheet 05 / 05 · Elementary cellular automaton · 256 possible rules</p>
+        <h2 id="h-rules">Rule table</h2>
+      </div>
+      <p>Each cell looks at itself and its two neighbours and picks a new colour from this table. Click any result to flip it and watch the rule number change. Each row below is the next moment in time.</p>
+    </div>
+    <div class="panel">
+      <div class="rt-wrap" id="rtable" role="group" aria-label="Rule lookup table"></div>
+      <div class="controls">
+        <div class="ctl"><label for="ruleNum">Rule</label><input type="number" id="ruleNum" min="0" max="255" value="30"></div>
+        <div class="ctl"><label for="ruleRange">Slide through all 256</label><input type="range" id="ruleRange" min="0" max="255" value="30"></div>
+        <div class="ctl"><label>Famous rules</label><div class="seg" id="famous"></div></div>
+        <div class="ctl"><label>Start from</label>
+          <div class="seg" id="seeds" role="group" aria-label="Starting row">
+            <button class="btn sm" data-seed="single" aria-pressed="true">One cell</button>
+            <button class="btn sm" data-seed="random" aria-pressed="false">Random row</button>
+          </div>
+        </div>
+      </div>
+      <canvas id="ruleCv" class="cv" width="805" height="450" aria-label="Cellular automaton output" role="img"></canvas>
+      <p class="note" id="ruleNote"></p>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div><p class="meta">Build</p><p>One HTML file with no images and no frameworks. Every drawing is canvas, every sound comes from the Web Audio API.</p></div>
+    <div><p class="meta">Type</p><p>Big Shoulders Display for the drawing titles, Hanken Grotesk for reading, IBM Plex Mono for the instrument labels.</p></div>
+    <div><p class="meta">Colour</p><p>Prussian blue and paper white, the two inks of a cyanotype, with amber for whatever is new or active.</p></div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- colours read from the CSS tokens ---------- */
+  var C = {};
+  var themeHooks = [];
+  var root = document.documentElement;
+  function readColors() {
+    var cs = getComputedStyle(root);
+    C.paper = cs.getPropertyValue('--paper').trim();
+    C.ink = cs.getPropertyValue('--ink').trim();
+    C.ink2 = cs.getPropertyValue('--ink-2').trim();
+    C.line = cs.getPropertyValue('--line').trim();
+    C.accent = cs.getPropertyValue('--accent').trim();
+  }
+  function applyTheme(mode) {
+  
